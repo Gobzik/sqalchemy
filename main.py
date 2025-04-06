@@ -1,6 +1,8 @@
 import datetime
-from flask import Flask, render_template, redirect, abort, request
-from data import db_session
+from flask import Flask, render_template, redirect, abort, request, jsonify, make_response
+from flask_restful import Api
+
+from data import db_session, jobs_api, users_api, users_resources
 from data.jobs import Jobs
 from data.users import User
 from forms.worker import RegisterForm, LoginForm
@@ -13,6 +15,8 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+app = Flask(__name__)
+api = Api(app)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -22,6 +26,8 @@ def load_user(user_id):
 
 def main():
     db_session.global_init("db/mars.db")
+    '''app.register_blueprint(jobs_api.blueprint)
+    app.register_blueprint(users_api.blueprint)'''
 
     @app.route("/")
     def index():
@@ -79,7 +85,7 @@ def main():
 
     @app.route('/jobs', methods=['GET', 'POST'])
     @login_required
-    def add_news():
+    def add_jobs():
         form = JobForm()
         if form.validate_on_submit():
             db_sess = db_session.create_session()
@@ -142,6 +148,17 @@ def main():
         else:
             abort(404)
         return redirect('/')
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return make_response(jsonify({'error': 'Not found'}), 404)
+
+    @app.errorhandler(400)
+    def bad_request(_):
+        return make_response(jsonify({'error': 'Bad Request'}), 400)
+
+    api.add_resource(users_resources.UsersListResource, '/api/v2/users')
+    api.add_resource(users_resources.UsersResource, '/api/v2/users/<int:user_id>')
 
     app.run()
 
