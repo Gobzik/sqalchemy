@@ -2,7 +2,7 @@ from datetime import datetime
 
 from requests import get, post, put, delete
 
-print(get('http://localhost:5000/api/v2/users').json())
+"""print(get('http://localhost:5000/api/v2/users').json())
 print(get('http://localhost:5000/api/v2/users/6').json())
 print(get('http://localhost:5000/api/v2/users/999999').json())
 print(get('http://localhost:5000/api/v2/users/q').json())
@@ -27,4 +27,13 @@ print(post('http://localhost:5000/api/v2/users',
                'address': 'm',
                'position': 'Engineer',
                'speciality': 'Mechanical'
-           }).json())
+           }).json())"""
+
+
+print(post('http://localhost:5000/api/v2/jobs', json={
+    'team_leader': 6,
+    'job': 'Job5',
+    'work_size': 7,
+    'is_finished': False,
+    'collaborators': '1, 2'
+}).json())

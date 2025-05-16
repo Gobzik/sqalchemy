@@ -1,7 +1,7 @@
 from flask_restful import reqparse
 
 
-def make_parser():
+def make_users_parser():
     parser = reqparse.RequestParser()
     parser.add_argument('surname', required=True)
     parser.add_argument('name', required=True)

@@ -5,9 +5,9 @@ from flask_restful import reqparse, abort, Api, Resource
 
 from data import db_session
 from data.users import User
-from data.users_parser import make_parser
+from data.users_parser import make_users_parser
 
-parser = make_parser()
+parser = make_users_parser()
 
 
 def abort_if_user_not_found(user_id):

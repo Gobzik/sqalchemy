@@ -1,8 +1,9 @@
-import datetime
+import os
+
 from flask import Flask, render_template, redirect, abort, request, jsonify, make_response
 from flask_restful import Api
 
-from data import db_session, jobs_api, users_api, users_resources
+from data import db_session, users_resources, jobs_resources
 from data.jobs import Jobs
 from data.users import User
 from forms.worker import RegisterForm, LoginForm
@@ -11,12 +12,12 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from forms.works import JobForm
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+SECRET_KEY = os.urandom(32)
+app.config['SECRET_KEY'] = SECRET_KEY
 login_manager = LoginManager()
 login_manager.init_app(app)
-
-app = Flask(__name__)
 api = Api(app)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -33,7 +34,7 @@ def main():
     def index():
         db_sess = db_session.create_session()
         news = db_sess.query(Jobs).filter(Jobs.is_finished != True)
-        return render_template("index.html", news=news)
+        return render_template("index.html", news=news, current_user=current_user)
 
     @app.route('/register', methods=['GET', 'POST'])
     def reqister():
@@ -159,6 +160,8 @@ def main():
 
     api.add_resource(users_resources.UsersListResource, '/api/v2/users')
     api.add_resource(users_resources.UsersResource, '/api/v2/users/<int:user_id>')
+    api.add_resource(jobs_resources.JobsListResource, '/api/v2/jobs')
+    api.add_resource(jobs_resources.JobsResource, '/api/v2/jobs/<int:job_id>')
 
     app.run()
 
